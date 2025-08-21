@@ -4,7 +4,6 @@ param(
 )
 Import-Module Microsoft.Graph -ErrorAction Stop
 # Import Microsoft.Graph.Beta.* modules as needed for beta cmdlets.
-# Prompt for a user account to open an interactive authentication window.
-$account = Read-Host 'Enter the UPN for authentication'
-Connect-MgGraph -Environment $Environment -NoWelcome -LoginHint $account
+# Use device code authentication to avoid dependency on a local browser or cached credentials.
+Connect-MgGraph -Environment $Environment -UseDeviceCode -NoWelcome
 Get-MgContext
