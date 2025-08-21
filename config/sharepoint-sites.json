@@ -1,0 +1,22 @@
+[
+  {
+    "Title": "Program Office",
+    "Alias": "program-office",
+    "Description": "Program governance docs"
+  },
+  {
+    "Title": "Contracts",
+    "Alias": "contracts",
+    "Description": "RFPs, awards, closeout"
+  },
+  {
+    "Title": "FOIA",
+    "Alias": "foia",
+    "Description": "FOIA requests and logs"
+  },
+  {
+    "Title": "Program Planning",
+    "Alias": "program-planning",
+    "Description": "Annual plans, budgets"
+  }
+]

@@ -1,0 +1,7 @@
+{
+  "TenantId": "00000000-0000-0000-0000-000000000000",
+  "AppId": "00000000-0000-0000-0000-000000000000",
+  "CertThumbprint": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+  "Domain": "contoso.onmicrosoft.com",
+  "DefaultLocation": "US"
+}

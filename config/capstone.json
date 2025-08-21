@@ -1,0 +1,27 @@
+{
+  "Capstone": {
+    "PermanentLabel": "Capstone Email \u2013 Permanent",
+    "TemporaryLabel": "Agency Email \u2013 7 Years",
+    "TemporaryYears": 7,
+    "MailboxRoles": [
+      {
+        "Role": "Agency Head",
+        "UPNs": [
+          "record.manager@contoso.com"
+        ]
+      },
+      {
+        "Role": "Senior Policy Official",
+        "UPNs": [
+          "contract.officer@contoso.com"
+        ]
+      },
+      {
+        "Role": "FOIA Officer",
+        "UPNs": [
+          "foia.officer@contoso.com"
+        ]
+      }
+    ]
+  }
+}

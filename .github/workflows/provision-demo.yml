@@ -1,0 +1,42 @@
+name: Provision Purview Demo (Federal)
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: provision or teardown
+        required: true
+        default: provision
+jobs:
+  run:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install PowerShell modules
+        shell: pwsh
+        run: |
+          Install-Module Microsoft.Graph -Scope CurrentUser -Force
+          Install-Module ExchangeOnlineManagement -Scope CurrentUser -Force
+      - name: Configure cert
+        shell: pwsh
+        run: |
+          $bytes = [Convert]::FromBase64String("${{ secrets.M365_APP_CERT_BASE64 }}")
+          $path = "$env:USERPROFILE\\demoapp.pfx"
+          [IO.File]::WriteAllBytes($path, $bytes)
+          $pwd = (ConvertTo-SecureString "${{ secrets.M365_APP_CERT_PASSWORD }}" -AsPlainText -Force)
+          Import-PfxCertificate -FilePath $path -CertStoreLocation Cert:\CurrentUser\My -Password $pwd | Out-Null
+      - name: Provision
+        if: inputs.action == 'provision'
+        shell: pwsh
+        run: |
+          pwsh -File .\scripts\00_Prepare-Env.ps1
+          pwsh -File .\scripts\01_Seed-Users-And-Mail.ps1
+          pwsh -File .\scripts\03_Provision-Teams.ps1
+          pwsh -File .\scripts\04_Upload-Content.ps1
+          pwsh -File .\scripts\05a_Create-Records-Labels.ps1
+          pwsh -File .\scripts\05b_Create-Capstone-Email.ps1
+          pwsh -File .\scripts\06a_Create-AutoApply-Policies.ps1
+      - name: Teardown
+        if: inputs.action == 'teardown'
+        shell: pwsh
+        run: |
+          pwsh -File .\scripts\Teardown.ps1
