@@ -10,11 +10,12 @@ A refactored, one-click demo for Microsoft Purview Records Management aligned to
 - **GitHub Actions** to provision and load data automatically.
 
 ## Quick start (local)
-1. Copy `config/tenants.json.template` → `config/tenants.json` and fill values.
+1. Set environment variables `M365_TENANT_ID`, `M365_APP_ID`, and `M365_APP_CERT_THUMBPRINT`.
 2. PowerShell (Windows):
    ```powershell
    pwsh -File .\scripts\00_Prepare-Env.ps1
    pwsh -File .\scripts\01_Seed-Users-And-Mail.ps1
+   pwsh -File .\scripts\02_Provision-SharePointSites.ps1
    pwsh -File .\scripts\03_Provision-Teams.ps1
    pwsh -File .\scripts\05a_Create-Records-Labels.ps1
    pwsh -File .\scripts\05b_Create-Capstone-Email.ps1
