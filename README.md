@@ -1,6 +1,6 @@
 # Purview Records Demo (Federal)
 
-A refactored, one-click demo for Microsoft Purview Records Management aligned to **NARA GRS** (6.1 Capstone, 4.2 FOIA, 1.1 Contracts, 1.3 Program Planning, 5.2 Transitory) and the **M‑19‑21 / M‑23‑07** electronic‑records posture.
+A one-click demo for Microsoft Purview Records Management aligned to **NARA GRS** (6.1 Capstone, 4.2 FOIA, 1.1 Contracts, 1.3 Program Planning, 5.2 Transitory) and the **M‑19‑21 / M‑23‑07** electronic‑records posture.
 
 ## What you get
 - **GRS‑aligned file plan & Capstone** (email permanent vs 7‑year).
