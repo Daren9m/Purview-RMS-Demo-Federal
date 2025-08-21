@@ -1,0 +1,31 @@
+# Archives (default)
+*.zip
+*.tar
+*.gz
+
+# Allow curated synthetic data ZIP
+!synthetic-data/
+!synthetic-data/*.zip
+
+# Secrets
+config/tenants.json
+tenants.json
+**/tenants.json
+
+# Logs / temp
+*.log
+*.bak
+*.tmp
+*.ps1Transcript
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# Python cache
+__pycache__/
+*.pyc

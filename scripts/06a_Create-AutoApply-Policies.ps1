@@ -1,32 +1,24 @@
-# Contracts keyword auto-apply across workloads
+# Contract keywords
 $policyName = "AutoApply – Contracts"
 $ruleName   = "Contracts Keywords"
 $labelName  = "Contracts – 6 Years"
-
-$policy = Get-RetentionCompliancePolicy -Identity $policyName -ErrorAction SilentlyContinue
-if (-not $policy) {
-  $policy = New-RetentionCompliancePolicy -Name $policyName -SharePointLocation All -OneDriveLocation All -ExchangeLocation All -TeamsChannelLocation All
+if (-not (Get-RetentionCompliancePolicy -Identity $policyName -ErrorAction SilentlyContinue)) {
+  New-RetentionCompliancePolicy -Name $policyName -SharePointLocation All -OneDriveLocation All -ExchangeLocation All -TeamsChannelLocation All | Out-Null
 }
-
-$rule = Get-RetentionComplianceRule -Identity $ruleName -ErrorAction SilentlyContinue
-if (-not $rule) {
-  New-RetentionComplianceRule -Name $ruleName -Policy $policy.Name -ContentContainsSensitiveInformation @(
+if (-not (Get-RetentionComplianceRule -Identity $ruleName -ErrorAction SilentlyContinue)) {
+  New-RetentionComplianceRule -Name $ruleName -Policy $policyName -ContentContainsSensitiveInformation @(
     @{ Name="Keywords"; operands=@("RFP","Acquisition","Solicitation","Award","Closeout","SOW") }
-  ) -ApplyComplianceTag $labelName
+  ) -ApplyComplianceTag $labelName | Out-Null
 }
-
-# FOIA auto-apply based on keywords
+# FOIA keywords
 $policyName2 = "AutoApply – FOIA"
 $ruleName2   = "FOIA Keywords"
 $labelName2  = "FOIA Requests – 6 Years"
-
-$policy2 = Get-RetentionCompliancePolicy -Identity $policyName2 -ErrorAction SilentlyContinue
-if (-not $policy2) {
-  $policy2 = New-RetentionCompliancePolicy -Name $policyName2 -SharePointLocation All -OneDriveLocation All -ExchangeLocation All -TeamsChannelLocation All
+if (-not (Get-RetentionCompliancePolicy -Identity $policyName2 -ErrorAction SilentlyContinue)) {
+  New-RetentionCompliancePolicy -Name $policyName2 -SharePointLocation All -OneDriveLocation All -ExchangeLocation All -TeamsChannelLocation All | Out-Null
 }
-$rule2 = Get-RetentionComplianceRule -Identity $ruleName2 -ErrorAction SilentlyContinue
-if (-not $rule2) {
+if (-not (Get-RetentionComplianceRule -Identity $ruleName2 -ErrorAction SilentlyContinue)) {
   New-RetentionComplianceRule -Name $ruleName2 -Policy $policyName2 -ContentContainsSensitiveInformation @(
     @{ Name="Keywords"; operands=@("FOIA","Privacy Act","Disclosure","Request Number","Appeal") }
-  ) -ApplyComplianceTag $labelName2
+  ) -ApplyComplianceTag $labelName2 | Out-Null
 }

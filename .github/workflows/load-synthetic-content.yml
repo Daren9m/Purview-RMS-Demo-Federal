@@ -1,13 +1,17 @@
-name: Provision Purview Demo (Federal)
+name: Load Synthetic Content to M365
 on:
   workflow_dispatch:
     inputs:
-      action:
-        description: provision or teardown
+      team_name:
+        description: 'Team to post chat messages into'
+        default: 'Records Demo Team'
         required: true
-        default: provision
+      from_upn:
+        description: 'Mailbox to send synthetic emails from'
+        default: 'record.manager@contoso.com'
+        required: true
 jobs:
-  run:
+  load:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -34,31 +38,15 @@ jobs:
                  -replace '"AppId": ".*?"', '"AppId": "' + '${{ secrets.M365_APP_ID }}' + '"' `
                  -replace '"CertThumbprint": ".*?"', '"CertThumbprint": "' + '${{ secrets.M365_APP_CERT_THUMBPRINT }}' + '"'
             } | Set-Content config/tenants.json
-      - name: Provision
-        if: inputs.action == 'provision'
-        shell: pwsh
-        run: |
-          pwsh -File .\scripts\00_Prepare-Env.ps1
-          pwsh -File .\scripts\01_Seed-Users-And-Mail.ps1
-          pwsh -File .\scripts\03_Provision-Teams.ps1
-          pwsh -File .\scripts\05a_Create-Records-Labels.ps1
-          pwsh -File .\scripts\05b_Create-Capstone-Email.ps1
-          pwsh -File .\scripts\06a_Create-AutoApply-Policies.ps1
       - name: Unzip synthetic dataset
-        if: inputs.action == 'provision'
         shell: pwsh
         run: |
           Expand-Archive -Path ".\synthetic-data\synthetic-content-federal-full.zip" -DestinationPath "$PWD\synthetic-content" -Force
-      - name: Load synthetic content
-        if: inputs.action == 'provision'
+      - name: Connect and load content
         shell: pwsh
         run: |
+          pwsh -File .\scripts\00_Prepare-Env.ps1
           pwsh -File .\scripts\08_Load-SyntheticContent.ps1 `
             -ContentRoot "$PWD\synthetic-content" `
-            -TeamName "Records Demo Team" `
-            -FromUpn "record.manager@contoso.com"
-      - name: Teardown
-        if: inputs.action == 'teardown'
-        shell: pwsh
-        run: |
-          pwsh -File .\scripts\Teardown.ps1
+            -TeamName "${{ inputs.team_name }}" `
+            -FromUpn "${{ inputs.from_upn }}"

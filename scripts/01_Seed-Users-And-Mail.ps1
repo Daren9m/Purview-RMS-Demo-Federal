@@ -5,8 +5,7 @@ foreach ($u in $users) {
   $user = Get-MgUser -Filter "userPrincipalName eq '$($u.UserPrincipalName)'" -ErrorAction SilentlyContinue
   if (-not $user) { Write-Host "User $($u.UserPrincipalName) must pre-exist or be created per-tenant policy." }
 }
-
-# Seed mail to Contracting Officer (to demonstrate Exchange coverage/Capstone later)
+# Seed mail
 $from = "record.manager@contoso.com"
 $to = "contract.officer@contoso.com"
 $msg = @{
