@@ -10,9 +10,9 @@ A refactored, one-click demo for Microsoft Purview Records Management aligned to
 - **GitHub Actions** to provision and load data automatically.
 
 ## Quick start (local)
-1. Set environment variables `M365_TENANT_ID`, `M365_APP_ID`, and `M365_APP_CERT_THUMBPRINT`.
-2. PowerShell (Windows):
+1. PowerShell (Windows):
    ```powershell
+   # Add -Cloud USGov when connecting to a GCC tenant
    pwsh -File .\scripts\00_Prepare-Env.ps1
    pwsh -File .\scripts\01_Seed-Users-And-Mail.ps1
    pwsh -File .\scripts\02_Provision-SharePointSites.ps1
@@ -23,6 +23,7 @@ A refactored, one-click demo for Microsoft Purview Records Management aligned to
    Expand-Archive -Path .\synthetic-data\synthetic-content-federal-full.zip -DestinationPath .\synthetic-content -Force
    pwsh -File .\scripts\08_Load-SyntheticContent.ps1 -ContentRoot .\synthetic-content -TeamName "Records Demo Team" -FromUpn "record.manager@contoso.com"
    ```
+   Scripts authenticate interactively using the signed-in user.
 
 ## One‑click via GitHub Actions
 - **Provision Purview Demo (Federal)**: provisions labels/policies + unzips and loads synthetic content.
