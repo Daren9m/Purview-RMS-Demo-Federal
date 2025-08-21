@@ -1,6 +1,12 @@
 param([string]$FilePlan = ".\config\fileplan.json")
 $plan = Get-Content $FilePlan -Raw | ConvertFrom-Json
 foreach ($item in $plan) {
+  if ($item.EventType) {
+    $evt = Get-RetentionEventType -Identity $item.EventType -ErrorAction SilentlyContinue
+    if (-not $evt) {
+      New-RetentionEventType -Name $item.EventType -Description "$($item.Name) event" | Out-Null
+    }
+  }
   $existing = Get-ComplianceTag -Identity $item.Name -ErrorAction SilentlyContinue
   if ($existing) { continue }
   $params = @{
