@@ -1,4 +1,5 @@
 param([string]$UsersCsv = ".\config\users.csv")
+Install-Module Microsoft.Graph.Users -Force
 Import-Module Microsoft.Graph.Users
 $users = Import-Csv $UsersCsv
 foreach ($u in $users) {
@@ -13,4 +14,4 @@ $msg = @{
   body = @{ contentType = "Text"; content = "Please review the attached RFP and prepare award memo. Closeout date is 2025-09-30." }
   toRecipients = @(@{emailAddress=@{address=$to}})
 }
-New-MgUserSendMail -UserId $from -Message $msg -SaveToSentItems
+Send-MgUserMail -UserId $from -Message $msg -SaveToSentItems

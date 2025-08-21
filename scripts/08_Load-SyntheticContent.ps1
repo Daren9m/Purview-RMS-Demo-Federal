@@ -10,6 +10,7 @@ param(
   [string]$FromUpn = "record.manager@contoso.com"
 )
 
+Install-Module Microsoft.Graph.Users -Force
 Import-Module Microsoft.Graph.Users
 Import-Module Microsoft.Graph.Sites
 Import-Module Microsoft.Graph.Drives
@@ -139,7 +140,7 @@ if (Test-Path $emailsDir) {
       toRecipients = $toAddrs
     }
     try {
-      New-MgUserSendMail -UserId $from -Message $message -SaveToSentItems | Out-Null
+      Send-MgUserMail -UserId $from -Message $message -SaveToSentItems | Out-Null
       Write-Host "Sent synthetic email: $($eml.Subject) -> $($eml.To)"
     } catch { Write-Warning "Failed sending email from $from: $_" }
   }
