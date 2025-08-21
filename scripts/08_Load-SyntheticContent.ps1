@@ -72,8 +72,8 @@ function Parse-EmlSimple {
   $inHeaders = $true
   Get-Content $Path | ForEach-Object {
     if ($inHeaders) {
-      if ($_ -match "^\s*$") { $inHeaders = $false; return }
-      if ($_ -match "^\s") { return }
+      if ($_ -match "^\s*$") { $inHeaders = $false; continue }
+      if ($_ -match "^\s") { continue }
       $parts = $_ -split ":\s*",2
       if ($parts.Count -eq 2) { $headers[$parts[0]] = $parts[1] }
     } else {
