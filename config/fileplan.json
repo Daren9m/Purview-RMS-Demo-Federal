@@ -1,50 +1,47 @@
 [
   {
-    "Name": "FOIA Disclosure Logs \u2013 Permanent",
-    "GRS": "GRS 4.2 Item 020",
-    "RetentionDurationYears": -1,
-    "RetentionTrigger": "CreationAgeInDays",
-    "Action": "Keep",
-    "RequiresDispositionReview": false,
+    "Name": "FOIA Disclosure Logs - Permanent",
+    "FilePlanProperty": "GRS 4.2 Item 020",
+    "RetentionAction": "Keep",
+    "RetentionDuration": "Unlimited",
+    "RetentionType": "AgeInDays",
     "ContentType": "All"
   },
   {
-    "Name": "FOIA Requests \u2013 6 Years",
-    "GRS": "GRS 4.2 Item 010",
-    "RetentionDurationYears": 6,
-    "RetentionTrigger": "EventDate",
+    "Name": "FOIA Requests - 6 Years",
+    "FilePlanProperty": "GRS 4.2 Item 010",
+    "RetentionAction": "KeepAndDelete",
+    "RetentionDuration": 2190,
+    "RetentionType": "EventBased",
     "EventType": "FOIACaseClosed",
-    "Action": "KeepAndDelete",
-    "RequiresDispositionReview": true,
-    "ContentType": "All"
+    "ContentType": "All",
+    "IsRecordLabel": true
   },
   {
-    "Name": "Contracts \u2013 6 Years",
-    "GRS": "GRS 1.1 Item 010",
-    "RetentionDurationYears": 6,
-    "RetentionTrigger": "EventDate",
+    "Name": "Contracts - 6 Years",
+    "FilePlanProperty": "GRS 1.1 Item 010",
+    "RetentionAction": "KeepAndDelete",
+    "RetentionDuration": 2190,
+    "RetentionType": "EventBased",
     "EventType": "ContractClose",
-    "Action": "KeepAndDelete",
-    "RequiresDispositionReview": true,
+    "ContentType": "All",
+    "IsRecordLabel": true,
+    "AutoDelete": true
+  },
+  {
+    "Name": "Program Planning - 3 Years",
+    "FilePlanProperty": "GRS 1.3 Item 010",
+    "RetentionAction": "KeepAndDelete",
+    "RetentionDuration": 1095,
+    "RetentionType": "AgeInDays",
     "ContentType": "All"
   },
   {
-    "Name": "Program Planning \u2013 3 Years",
-    "GRS": "GRS 1.3 Item 010",
-    "RetentionDurationYears": 3,
-    "RetentionTrigger": "CreationAgeInDays",
-    "Action": "KeepAndDelete",
-    "RequiresDispositionReview": true,
-    "ContentType": "All"
-  },
-  {
-    "Name": "Transitory Records \u2013 90 Days",
-    "GRS": "GRS 5.2 Item 010",
-    "RetentionDurationYears": 0,
-    "RetentionTrigger": "CreationAgeInDays",
-    "RetentionDurationDays": 90,
-    "Action": "Delete",
-    "RequiresDispositionReview": false,
+    "Name": "Transitory Records - 90 Days",
+    "FilePlanProperty": "GRS 5.2 Item 010",
+    "RetentionAction": "Delete",
+    "RetentionDuration": 90,
+    "RetentionType": "AgeInDays",
     "ContentType": "All"
   }
 ]
