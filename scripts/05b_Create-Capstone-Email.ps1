@@ -5,11 +5,11 @@ $permLabel = $cfg.Capstone.PermanentLabel
 $tempLabel = $cfg.Capstone.TemporaryLabel
 $tempYears = [int]$cfg.Capstone.TemporaryYears
 $capstoneUPNs = @(); $cfg.Capstone.MailboxRoles | ForEach-Object { $capstoneUPNs += $_.UPNs }
-if (-not (Get-Label -Identity $permLabel -ErrorAction SilentlyContinue)) {
-  New-Label -Name $permLabel -RetentionAction Keep -RetentionDuration Unlimited -ContentType "ExchangeEmail" -IsRecordLabel $true | Out-Null
+if (-not (Get-ComplianceTag -Identity $permLabel -ErrorAction SilentlyContinue)) {
+  New-ComplianceTag -Name $permLabel -RetentionAction Keep -RetentionDuration Unlimited -ContentType "ExchangeEmail" -IsRecordLabel $true | Out-Null
 }
-if (-not (Get-Label -Identity $tempLabel -ErrorAction SilentlyContinue)) {
-  New-Label -Name $tempLabel -RetentionAction KeepAndDelete -RetentionDuration "$tempYears Years" -ContentType "ExchangeEmail" -IsRecordLabel $false | Out-Null
+if (-not (Get-ComplianceTag -Identity $tempLabel -ErrorAction SilentlyContinue)) {
+  New-ComplianceTag -Name $tempLabel -RetentionAction KeepAndDelete -RetentionDuration "$tempYears Years" -ContentType "ExchangeEmail" -IsRecordLabel $false | Out-Null
 }
 $permPolicyName = "Capstone – Email Permanent"
 $tempPolicyName = "Agency Email – 7 Years"

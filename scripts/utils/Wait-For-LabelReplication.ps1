@@ -3,7 +3,7 @@ $start = Get-Date
 do {
   Start-Sleep -Seconds 30
   try {
-    $label = Get-Label -Identity $LabelName -ErrorAction Stop
+    $label = Get-ComplianceTag -Identity $LabelName -ErrorAction Stop
     if ($label) { return $true }
   } catch { }
 } while ((Get-Date) -lt $start.AddMinutes($TimeoutMinutes))
