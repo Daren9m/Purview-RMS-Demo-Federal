@@ -18,11 +18,24 @@ Import-Module Microsoft.Graph.Teams
 
 function Get-DriveForSiteAlias {
   param([string]$Alias)
-  $site = Get-MgSite -Search $Alias | Select-Object -First 1
+  $site = Get-MgSite -Search $Alias | Where-Object { $_.WebUrl -match "/sites/$Alias$" } | Select-Object -First 1
   if (-not $site) { Write-Warning "SharePoint site with alias '$Alias' not found."; return $null }
   $drive = Get-MgSiteDrive -SiteId $site.Id | Select-Object -First 1
   if (-not $drive) { Write-Warning "Drive for site '$Alias' not found."; return $null }
   return $drive
+}
+
+function Ensure-DriveFolder {
+  param(
+    [string]$DriveId,
+    [string]$ParentId,
+    [string]$Name
+  )
+  $child = Get-MgDriveItemChild -DriveId $DriveId -DriveItemId $ParentId -Filter "name eq '$Name' and folder ne null" -ErrorAction SilentlyContinue | Select-Object -First 1
+  if (-not $child) {
+    $child = New-MgDriveItem -DriveId $DriveId -DriveItemId $ParentId -Name $Name -Folder @{}
+  }
+  return $child.Id
 }
 
 function Upload-FolderToDrive {
@@ -32,11 +45,17 @@ function Upload-FolderToDrive {
   )
   $drive = Get-DriveForSiteAlias -Alias $Alias
   if (-not $drive) { return }
-  Get-ChildItem -Path $FolderPath -File | ForEach-Object {
-    Write-Host "Uploading $($_.Name) -> $Alias"
-    $session = New-MgDriveItemUploadSession -DriveId $drive.Id -FileName $_.Name -AdditionalProperties @{
-      "@microsoft.graph.conflictBehavior" = "replace"
+  $rootId = $drive.Root.Id
+  Get-ChildItem -Path $FolderPath -Recurse -File | ForEach-Object {
+    $relative = [System.IO.Path]::GetRelativePath($FolderPath, $_.DirectoryName)
+    $parentId = $rootId
+    if ($relative -and $relative -ne '.') {
+      foreach ($part in $relative.Split([IO.Path]::DirectorySeparatorChar)) {
+        if ($part) { $parentId = Ensure-DriveFolder -DriveId $drive.Id -ParentId $parentId -Name $part }
+      }
     }
+    Write-Host "Uploading $($_.Name) -> $Alias/$relative"
+    $session = New-MgDriveItemUploadSession -DriveId $drive.Id -DriveItemId $parentId -FileName $_.Name -AdditionalProperties @{"@microsoft.graph.conflictBehavior"="replace"}
     Invoke-MgUploadFile -InputFile $_.FullName -UploadUrl $session.UploadUrl | Out-Null
   }
 }
@@ -74,12 +93,13 @@ function Parse-EmlSimple {
   $headers = @{}
   $bodyLines = @()
   $inHeaders = $true
+  $current = $null
   Get-Content $Path | ForEach-Object {
     if ($inHeaders) {
-      if ($_ -match "^\s*$") { $inHeaders = $false; continue }
-      if ($_ -match "^\s") { continue }
-      $parts = $_ -split ":\s*",2
-      if ($parts.Count -eq 2) { $headers[$parts[0]] = $parts[1] }
+      if ($_ -match '^\s*$') { $inHeaders = $false; return }
+      if ($_ -match '^[\t ]' -and $current) { $headers[$current] += " " + $_.Trim(); return }
+      $parts = $_ -split ':\s*',2
+      if ($parts.Count -eq 2) { $current = $parts[0]; $headers[$current] = $parts[1] }
     } else {
       $bodyLines += $_
     }

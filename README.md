@@ -15,6 +15,7 @@ A refactored, one-click demo for Microsoft Purview Records Management aligned to
    ```powershell
    pwsh -File .\scripts\00_Prepare-Env.ps1
    pwsh -File .\scripts\01_Seed-Users-And-Mail.ps1
+   pwsh -File .\scripts\02_Provision-SharePointSites.ps1
    pwsh -File .\scripts\03_Provision-Teams.ps1
    pwsh -File .\scripts\05a_Create-Records-Labels.ps1
    pwsh -File .\scripts\05b_Create-Capstone-Email.ps1

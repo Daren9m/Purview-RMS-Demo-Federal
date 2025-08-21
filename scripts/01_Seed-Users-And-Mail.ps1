@@ -14,4 +14,15 @@ $msg = @{
   body = @{ contentType = "Text"; content = "Please review the attached RFP and prepare award memo. Closeout date is 2025-09-30." }
   toRecipients = @(@{emailAddress=@{address=$to}})
 }
-Send-MgUserMail -UserId $from -Message $msg -SaveToSentItems
+try {
+  $fromUser = Get-MgUser -Filter "userPrincipalName eq '$from'" -ErrorAction SilentlyContinue
+  $toUser = Get-MgUser -Filter "userPrincipalName eq '$to'" -ErrorAction SilentlyContinue
+  if ($fromUser -and $toUser) {
+    Send-MgUserMail -UserId $from -Message $msg -SaveToSentItems
+    Write-Host "Seed mail sent from $from to $to"
+  } else {
+    Write-Warning "Skipping seed mail; required accounts are missing."
+  }
+} catch {
+  Write-Warning "Failed sending seed mail: $_"
+}
