@@ -4,4 +4,4 @@ param(
 )
 
 $graphContext = . .\scripts\utils\Connect-Graph.ps1 -Environment $Cloud
-. .\scripts\utils\Connect-Compliance.ps1 -Environment $graphContext.Environment
+. .\scripts\utils\Connect-Compliance.ps1 -Environment $Cloud
