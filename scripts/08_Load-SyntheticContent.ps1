@@ -33,7 +33,10 @@ function Upload-FolderToDrive {
   if (-not $drive) { return }
   Get-ChildItem -Path $FolderPath -File | ForEach-Object {
     Write-Host "Uploading $($_.Name) -> $Alias"
-    New-MgDriveItemUpload -DriveId $drive.Id -Name $_.Name -FilePath $_.FullName -ConflictBehavior replace | Out-Null
+    $session = New-MgDriveItemUploadSession -DriveId $drive.Id -FileName $_.Name -AdditionalProperties @{
+      "@microsoft.graph.conflictBehavior" = "replace"
+    }
+    Invoke-MgUploadFile -InputFile $_.FullName -UploadUrl $session.UploadUrl | Out-Null
   }
 }
 
