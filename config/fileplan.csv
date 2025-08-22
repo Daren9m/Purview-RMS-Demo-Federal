@@ -1,6 +1,6 @@
 LabelName,Comment,Notes,IsRecordLabel,RetentionAction,RetentionDuration,RetentionType,ReviewerEmail,ReferenceId,DepartmentName,Category,SubCategory,AuthorityType,CitationName,CitationUrl,CitationJurisdiction,Regulatory,EventType,IsRecordUnlockedAsDefault,ComplianceTagForNextStage
-"FOIA Disclosure Logs - Permanent",,,,"Keep","Unlimited","AgeInDays",,"GRS 4.2 Item 020",,,,,,,,,,,
-"FOIA Requests - 6 Years",,,true,"KeepAndDelete",2190,"EventAgeInDays",,"GRS 4.2 Item 010",,,,,,,,"FOIACaseClosed",,,
-"Contracts - 6 Years",,,true,"KeepAndDelete",2190,"EventAgeInDays",,"GRS 1.1 Item 010",,,,,,,,"ContractClose",,,
-"Program Planning - 3 Years",,,,"KeepAndDelete",1095,"AgeInDays",,"GRS 1.3 Item 010",,,,,,,,,,,
-"Transitory Records - 90 Days",,,,"Delete",90,"AgeInDays",,"GRS 5.2 Item 010",,,,,,,,,,,
+FOIA Disclosure Logs - Permanent,,,true,Keep,Unlimited,AgeInDays,,GRS 4.2 Item 020,,,,,,,,,,,
+FOIA Requests - 6 Years,,,true,KeepAndDelete,2190,EventAgeInDays,,GRS 4.2 Item 010,,,,,,,,,FOIACaseClosed,,
+Contracts - 6 Years,,,true,KeepAndDelete,2190,EventAgeInDays,,GRS 1.1 Item 010,,,,,,,,,ContractClose,,
+Program Planning - 3 Years,,,,KeepAndDelete,1095,AgeInDays,,GRS 1.3 Item 010,,,,,,,,,,,
+Transitory Records - 90 Days,,,,Delete,90,AgeInDays,,GRS 5.2 Item 010,,,,,,,,,,,
