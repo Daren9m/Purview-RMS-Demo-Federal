@@ -2,7 +2,7 @@ param(
     [string]$UsersCsv = ".\config\users.csv",
     [string]$LicenseGroupName = "E5 License Group",
     [switch]$CreateLicenseGroup,
-    [string]$LogFile = ".\logs\01_Seed-Users-And-Mail.log"
+    [string]$LogFile = ".\logs\01_Seed-Users.log"
 )
 
 $logDir = Split-Path $LogFile
@@ -118,25 +118,3 @@ foreach ($u in $users) {
         }
     }
 }
-
-# Seed mail
-$from = "record.manager@contoso.com"
-$to = "contract.officer@contoso.com"
-$msg = @{
-  subject = "RFP ACQ-24-019 Statement of Work and Closeout"
-  body = @{ contentType = "Text"; content = "Please review the attached RFP and prepare award memo. Closeout date is 2025-09-30." }
-  toRecipients = @(@{emailAddress=@{address=$to}})
-}
-try {
-  $fromUser = Get-MgUser -Filter "userPrincipalName eq '$from'" -ErrorAction SilentlyContinue
-  $toUser = Get-MgUser -Filter "userPrincipalName eq '$to'" -ErrorAction SilentlyContinue
-  if ($fromUser -and $toUser) {
-    Send-MgUserMail -UserId $from -Message $msg -SaveToSentItems
-    Write-Log -Level "INFO" -Action "Seed mail sent" -Details "$from -> $to"
-  } else {
-    Write-Log -Level "Warning" -Action "Skipping seed mail" -Details "Required accounts missing"
-  }
-} catch {
-  Write-Log -Level "Warning" -Action "Failed sending seed mail" -Details $_
-}
-
