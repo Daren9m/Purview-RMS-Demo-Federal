@@ -5,7 +5,6 @@
     "RetentionAction": "Keep",
     "RetentionDuration": "Unlimited",
     "RetentionType": "AgeInDays"
-    
   },
   {
     "Name": "FOIA Requests - 6 Years",
