@@ -24,7 +24,7 @@ foreach ($lab in $plan) {
   $fp = @()
   foreach ($prop in 'ReferenceId','DepartmentName','Category','SubCategory','AuthorityType','CitationName','CitationUrl','CitationJurisdiction','Regulatory') {
     $val = $lab.$prop
-    if ($val) { $fp += "$prop:$val" }
+    if ($val) { $fp += ("{0}:{1}" -f $prop, $val) }
   }
   if ($fp.Count) { $params.FilePlanProperty = $fp -join ';' }
 
