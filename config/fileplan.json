@@ -5,7 +5,7 @@
     "RetentionAction": "Keep",
     "RetentionDuration": "Unlimited",
     "RetentionType": "AgeInDays",
-    "ContentType": "All"
+    
   },
   {
     "Name": "FOIA Requests - 6 Years",
@@ -14,7 +14,6 @@
     "RetentionDuration": 2190,
     "RetentionType": "EventAgeInDays",
     "EventType": "FOIACaseClosed",
-    "ContentType": "All",
     "IsRecordLabel": true
   },
   {
@@ -24,7 +23,6 @@
     "RetentionDuration": 2190,
     "RetentionType": "EventAgeInDays",
     "EventType": "ContractClose",
-    "ContentType": "All",
     "IsRecordLabel": "true",
     "AutoDelete": "true"
   },
@@ -33,8 +31,7 @@
     "FilePlanProperty": "GRS 1.3 Item 010",
     "RetentionAction": "KeepAndDelete",
     "RetentionDuration": 1095,
-    "RetentionType": "AgeInDays",
-    "ContentType": "All"
+    "RetentionType": "AgeInDays"
   },
   {
     "Name": "Transitory Records - 90 Days",
@@ -42,6 +39,5 @@
     "RetentionAction": "Delete",
     "RetentionDuration": 90,
     "RetentionType": "AgeInDays",
-    "ContentType": "All"
-  }
+    }
 ]
