@@ -22,8 +22,8 @@
     "RetentionDuration": 2190,
     "RetentionType": "EventAgeInDays",
     "EventType": "ContractClose",
-    "IsRecordLabel": true,
-    "AutoDelete": true
+    "IsRecordLabel": "true",
+    "AutoDelete": "true"
   },
   {
     "Name": "Program Planning - 3 Years",
@@ -38,6 +38,5 @@
     "RetentionAction": "Delete",
     "RetentionDuration": 90,
     "RetentionType": "AgeInDays"
-  }
+    }
 ]
-
