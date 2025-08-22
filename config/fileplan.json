@@ -4,7 +4,7 @@
     "FilePlanProperty": "GRS 4.2 Item 020",
     "RetentionAction": "Keep",
     "RetentionDuration": "Unlimited",
-    "RetentionType": "AgeInDays",
+    "RetentionType": "AgeInDays"
     
   },
   {
