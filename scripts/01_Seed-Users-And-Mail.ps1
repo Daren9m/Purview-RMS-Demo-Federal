@@ -1,12 +1,21 @@
 param([string]$UsersCsv = ".\config\users.csv")
 
 # Ensure Microsoft Graph modules are available
-Install-Module Microsoft.Graph.Users -Force
-Install-Module Microsoft.Graph.Groups -Force
-Install-Module Microsoft.Graph.Identity.DirectoryManagement -Force
-Import-Module Microsoft.Graph.Users
-Import-Module Microsoft.Graph.Groups
-Import-Module Microsoft.Graph.Identity.DirectoryManagement
+$modules = @(
+    'Microsoft.Graph.Users',
+    'Microsoft.Graph.Groups',
+    'Microsoft.Graph.Identity.DirectoryManagement'
+)
+foreach ($mod in $modules) {
+    if (-not (Get-Module -ListAvailable -Name $mod)) {
+        try {
+            Install-Module $mod -Scope CurrentUser -Force -ErrorAction Stop
+        } catch {
+            Write-Warning "Failed to install $mod : $_"
+        }
+    }
+    Import-Module $mod -ErrorAction SilentlyContinue
+}
 
 # Create or get E5 license group and assign E5 licenses
 $licenseGroupName = "E5 License Group"
