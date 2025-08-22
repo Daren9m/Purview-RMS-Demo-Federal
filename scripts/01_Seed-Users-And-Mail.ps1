@@ -1,34 +1,93 @@
-param([string]$UsersCsv = ".\config\users.csv")
+param(
+    [string]$UsersCsv = ".\config\users.csv",
+    [string]$LicenseGroupName = "E5 License Group",
+    [switch]$CreateLicenseGroup,
+    [string]$LogFile = ".\logs\01_Seed-Users-And-Mail.log"
+)
+
+$logDir = Split-Path $LogFile
+if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force | Out-Null }
+
+function Write-Log {
+    param([string]$Level, [string]$Action, [string]$Details = "")
+    $entry = [PSCustomObject]@{
+        Timestamp = (Get-Date).ToString("o")
+        Level     = $Level
+        Action    = $Action
+        Details   = $Details
+    }
+    $entry | ConvertTo-Json -Compress | Add-Content -Path $LogFile
+    if ($Level -eq "Warning") {
+        Write-Warning "$Action $Details"
+    } else {
+        Write-Host "$Action $Details"
+    }
+}
+
+$runInfo = [PSCustomObject]@{
+    Timestamp = (Get-Date).ToString("o")
+    AdminUser = [Environment]::UserName
+    Machine   = [Environment]::MachineName
+    OS        = [System.Environment]::OSVersion.VersionString
+    Script    = $MyInvocation.MyCommand.Path
+}
+$runInfo | ConvertTo-Json -Compress | Set-Content -Path $LogFile
 
 # Ensure Microsoft Graph modules are available
-Install-Module Microsoft.Graph.Users -Force
-Install-Module Microsoft.Graph.Groups -Force
-Install-Module Microsoft.Graph.Identity.DirectoryManagement -Force
-Import-Module Microsoft.Graph.Users
-Import-Module Microsoft.Graph.Groups
-Import-Module Microsoft.Graph.Identity.DirectoryManagement
+foreach ($m in @("Microsoft.Graph.Users","Microsoft.Graph.Groups","Microsoft.Graph.Identity.DirectoryManagement")) {
+    try {
+        Install-Module $m -Force
+        Import-Module $m
+        Write-Log -Level "INFO" -Action "Module loaded" -Details $m
+    } catch {
+        Write-Log -Level "Warning" -Action "Module load failed" -Details "$m : $_"
+    }
+}
 
 # Create or get E5 license group and assign E5 licenses
-$licenseGroupName = "E5 License Group"
-$licenseGroup = Get-MgGroup -Filter "displayName eq '$licenseGroupName'" -ErrorAction SilentlyContinue
-if (-not $licenseGroup) {
-    $licenseGroup = New-MgGroup -DisplayName $licenseGroupName -MailEnabled:$false -MailNickname "E5LicenseGroup" -SecurityEnabled
-    Write-Host "Created license group $licenseGroupName"
-}
-$e5Sku = (Get-MgSubscribedSku | Where-Object { $_.SkuPartNumber -eq "ENTERPRISEPREMIUM" } | Select-Object -First 1).SkuId
-if ($e5Sku -and $licenseGroup) {
+$licenseGroup = Get-MgGroup -Filter "displayName eq '$LicenseGroupName'" -ErrorAction SilentlyContinue
+if (-not $licenseGroup -and $CreateLicenseGroup) {
     try {
-        Set-MgGroupLicense -GroupId $licenseGroup.Id -AddLicenses @{SkuId=$e5Sku} -RemoveLicenses @() | Out-Null
-        Write-Host "E5 license linked to group $licenseGroupName"
+        $licenseGroup = New-MgGroup -DisplayName $LicenseGroupName -MailEnabled:$false -MailNickname ($LicenseGroupName -replace '\s','') -SecurityEnabled
+        Write-Log -Level "INFO" -Action "Created license group" -Details $LicenseGroupName
     } catch {
-        Write-Warning "Failed assigning license to group: $_"
+        Write-Log -Level "Warning" -Action "Failed creating license group" -Details $_
+    }
+} elseif (-not $licenseGroup) {
+    Write-Log -Level "Warning" -Action "License group not found" -Details $LicenseGroupName
+}
+
+$e5Sku = Get-MgSubscribedSku | Where-Object { $_.SkuPartNumber -eq "ENTERPRISEPREMIUM" } | Select-Object -First 1
+if ($e5Sku) {
+    $users = Import-Csv $UsersCsv
+    $availableLicenses = $e5Sku.PrepaidUnits.Enabled - $e5Sku.ConsumedUnits
+    Write-Log -Level "INFO" -Action "E5 license availability" -Details "Available: $availableLicenses"
+    if ($availableLicenses -lt $users.Count) {
+        Write-Log -Level "Warning" -Action "Insufficient E5 licenses" -Details "Available: $availableLicenses; Required: $($users.Count)"
+    }
+    if ($licenseGroup) {
+        $licenseDetails = Get-MgGroupLicenseDetail -GroupId $licenseGroup.Id -ErrorAction SilentlyContinue
+        $hasLicense = $false
+        if ($licenseDetails) { $hasLicense = $licenseDetails.SkuId -contains $e5Sku.SkuId }
+        if (-not $hasLicense -and $availableLicenses -gt 0) {
+            try {
+                Set-MgGroupLicense -GroupId $licenseGroup.Id -AddLicenses @{SkuId=$e5Sku.SkuId} -RemoveLicenses @() | Out-Null
+                Write-Log -Level "INFO" -Action "E5 license linked to group" -Details $LicenseGroupName
+            } catch {
+                Write-Log -Level "Warning" -Action "Failed assigning license to group" -Details $_
+            }
+        } elseif ($hasLicense) {
+            Write-Log -Level "INFO" -Action "Group already has E5 license" -Details $LicenseGroupName
+        } else {
+            Write-Log -Level "Warning" -Action "No available E5 licenses to assign" -Details ""
+        }
     }
 } else {
-    Write-Warning "E5 license SKU not found; ensure tenant has E5 licenses."
+    Write-Log -Level "Warning" -Action "E5 license SKU not found" -Details "Ensure tenant has E5 licenses"
+    $users = Import-Csv $UsersCsv
 }
 
 # Ensure users exist and add them to the license group
-$users = Import-Csv $UsersCsv
 foreach ($u in $users) {
     $user = Get-MgUser -Filter "userPrincipalName eq '$($u.UserPrincipalName)'" -ErrorAction SilentlyContinue
     if (-not $user) {
@@ -43,9 +102,9 @@ foreach ($u in $users) {
         }
         try {
             $user = New-MgUser @params
-            Write-Host "Created user $($u.UserPrincipalName)"
+            Write-Log -Level "INFO" -Action "Created user" -Details $u.UserPrincipalName
         } catch {
-            Write-Warning "Failed creating user $($u.UserPrincipalName): $_"
+            Write-Log -Level "Warning" -Action "Failed creating user" -Details "$($u.UserPrincipalName): $_"
             continue
         }
     }
@@ -53,9 +112,9 @@ foreach ($u in $users) {
     if ($licenseGroup) {
         try {
             Add-MgGroupMember -GroupId $licenseGroup.Id -DirectoryObjectId $user.Id -ErrorAction Stop
-            Write-Host "Added $($u.UserPrincipalName) to $licenseGroupName"
+            Write-Log -Level "INFO" -Action "Added user to group" -Details $u.UserPrincipalName
         } catch {
-            Write-Warning "Failed adding $($u.UserPrincipalName) to group: $_"
+            Write-Log -Level "Warning" -Action "Failed adding user to group" -Details "$($u.UserPrincipalName): $_"
         }
     }
 }
@@ -73,11 +132,11 @@ try {
   $toUser = Get-MgUser -Filter "userPrincipalName eq '$to'" -ErrorAction SilentlyContinue
   if ($fromUser -and $toUser) {
     Send-MgUserMail -UserId $from -Message $msg -SaveToSentItems
-    Write-Host "Seed mail sent from $from to $to"
+    Write-Log -Level "INFO" -Action "Seed mail sent" -Details "$from -> $to"
   } else {
-    Write-Warning "Skipping seed mail; required accounts are missing."
+    Write-Log -Level "Warning" -Action "Skipping seed mail" -Details "Required accounts missing"
   }
 } catch {
-  Write-Warning "Failed sending seed mail: $_"
+  Write-Log -Level "Warning" -Action "Failed sending seed mail" -Details $_
 }
 

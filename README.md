@@ -14,7 +14,7 @@ A one-click demo for Microsoft Purview Records Management aligned to **NARA GRS*
    ```powershell
    # Add -Cloud USGov when connecting to a GCC tenant
    pwsh -File .\scripts\00_Prepare-Env.ps1
-   pwsh -File .\scripts\01_Seed-Users-And-Mail.ps1
+   pwsh -File .\scripts\01_Seed-Users-And-Mail.ps1 -CreateLicenseGroup
    pwsh -File .\scripts\02_Provision-SharePointSites.ps1
    pwsh -File .\scripts\03_Provision-Teams.ps1
    pwsh -File .\scripts\05a_Create-Records-Labels.ps1
@@ -23,7 +23,7 @@ A one-click demo for Microsoft Purview Records Management aligned to **NARA GRS*
    Expand-Archive -Path .\synthetic-data\synthetic-content-federal-full.zip -DestinationPath .\synthetic-content -Force
    pwsh -File .\scripts\08_Load-SyntheticContent.ps1 -ContentRoot .\synthetic-content -TeamName "Records Demo Team" -FromUpn "record.manager@contoso.com"
    ```
-   Scripts authenticate interactively using the signed-in user.
+Scripts authenticate interactively using the signed-in user. Log output is written to `logs/01_Seed-Users-And-Mail.log`.
 
 ## One‑click via GitHub Actions
 - **Provision Purview Demo (Federal)**: provisions labels/policies + unzips and loads synthetic content.
