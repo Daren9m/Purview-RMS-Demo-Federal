@@ -38,6 +38,6 @@
     "FilePlanProperty": "GRS 5.2 Item 010",
     "RetentionAction": "Delete",
     "RetentionDuration": 90,
-    "RetentionType": "AgeInDays",
+    "RetentionType": "AgeInDays"
     }
 ]
