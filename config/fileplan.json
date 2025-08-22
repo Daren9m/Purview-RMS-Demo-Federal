@@ -12,7 +12,7 @@
     "FilePlanProperty": "GRS 4.2 Item 010",
     "RetentionAction": "KeepAndDelete",
     "RetentionDuration": 2190,
-    "RetentionType": "EventBased",
+    "RetentionType": "EventAgeInDays",
     "EventType": "FOIACaseClosed",
     "ContentType": "All",
     "IsRecordLabel": true
@@ -22,11 +22,11 @@
     "FilePlanProperty": "GRS 1.1 Item 010",
     "RetentionAction": "KeepAndDelete",
     "RetentionDuration": 2190,
-    "RetentionType": "EventBased",
+    "RetentionType": "EventAgeInDays",
     "EventType": "ContractClose",
     "ContentType": "All",
-    "IsRecordLabel": true,
-    "AutoDelete": true
+    "IsRecordLabel": "true",
+    "AutoDelete": "true"
   },
   {
     "Name": "Program Planning - 3 Years",

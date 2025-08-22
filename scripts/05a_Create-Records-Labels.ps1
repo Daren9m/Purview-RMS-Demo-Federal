@@ -1,10 +1,11 @@
 param([string]$FilePlan = ".\config\fileplan.json")
 $plan = Get-Content $FilePlan -Raw | ConvertFrom-Json
+$plan = $plan[1]
 foreach ($item in $plan) {
   if ($item.EventType) {
-    $evt = Get-RetentionEventType -Identity $item.EventType -ErrorAction SilentlyContinue
+    $evt = Get-ComplianceRetentionEventType -Identity $item.EventType -ErrorAction SilentlyContinue
     if (-not $evt) {
-      New-RetentionEventType -Name $item.EventType -Description "$($item.Name) event" | Out-Null
+      New-ComplianceRetentionEventType -Name $item.EventType -Comment "$($item.Name) event" | Out-Null
     }
   }
   $existing = Get-ComplianceTag -Identity $item.Name -ErrorAction SilentlyContinue
@@ -14,15 +15,9 @@ foreach ($item in $plan) {
     RetentionAction = $item.RetentionAction
     RetentionDuration = $item.RetentionDuration
     RetentionType = $item.RetentionType
-    ContentType = $item.ContentType
-  }
+      }
   if ($item.FilePlanProperty) { $params.FilePlanProperty = $item.FilePlanProperty }
+  if ($item.IsRecordLabel) { $params.IsRecordLabel = $item.IsRecordLabel }
   if ($item.EventType) { $params.EventType = $item.EventType }
   New-ComplianceTag @params
-  if ($item.IsRecordLabel -or $item.AutoDelete) {
-    $setParams = @{ Identity = $item.Name }
-    if ($item.IsRecordLabel) { $setParams.IsRecordLabel = $true }
-    if ($item.AutoDelete) { $setParams.AutoDelete = $true }
-    Set-ComplianceTag @setParams
-  }
 }
