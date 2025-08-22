@@ -24,7 +24,7 @@ foreach ($lab in $plan) {
   $fp = @()
   foreach ($prop in 'ReferenceId','DepartmentName','Category','SubCategory','AuthorityType','CitationName','CitationUrl','CitationJurisdiction','Regulatory') {
     $val = $lab.$prop
-    if ($val) { $fp += [pscustomobject]@{ Name = $prop; Value = $val } }
+    if ($val) { $fp += "$prop:$val" }
   }
   if ($fp.Count) { $params.FilePlanProperty = $fp }
 
@@ -40,7 +40,12 @@ foreach ($lab in $plan) {
 
   $existing = Get-ComplianceTag -Identity $lab.LabelName -ErrorAction SilentlyContinue
   if (-not $existing) {
-    New-ComplianceTag @params
+    try {
+      New-ComplianceTag @params -ErrorAction Stop | Out-Null
+    } catch {
+      Write-Error "Failed to create compliance tag $($lab.LabelName): $_"
+      return
+    }
   }
 }
 
